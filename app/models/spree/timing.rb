@@ -1,6 +1,6 @@
 module Spree
 
-  class Timing < Spree::Base
+  class Timing < ActiveRecord::Base
 
     ##Associations
     belongs_to :pickup_location

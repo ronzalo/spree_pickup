@@ -1,13 +1,12 @@
 module Spree
-
-  class PickupLocation < Spree::Base
+  class PickupLocation < ActiveRecord::Base
     extend Geocoder::Model::ActiveRecord
 
     attr_accessor :open_day_ids, :open_day_ids_was
 
     ##Associations
     belongs_to :address
-    has_many :timings, dependent: :destroy, class_name: 'Spree::Timing'
+    has_many :timings, dependent: :destroy
 
     ##Validations
     validates :longitude, :latitude, :name, :address, :start_time, :end_time, presence: true
@@ -34,7 +33,7 @@ module Spree
 
       def create_timings
         self.timings.delete_all
-        self.timings = (open_day_ids.map{|i| Timing.new(day_id: i)})
+        self.timings = (open_day_ids.map{|i| Spree::Timing.new(day_id: i)})
       end
 
       def update_geocode
@@ -54,7 +53,7 @@ module Spree
       end
 
       def end_time_must_be_greater_than_start_time
-        errors[:end_time] << Spree.t(:greater_than_start_time) if start_time >= end_time
+        errors[:end_time] << Spree.t(:greater_than_start_time) if (start_time && end_time) && start_time >= end_time
       end
 
       def open_day_ids_changed?
